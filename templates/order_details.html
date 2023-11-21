@@ -1,0 +1,285 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Cart</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'home/lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'home/css/style.css' %}" rel="stylesheet">
+
+    <link href="{% static 'home/css/product.css' %}" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row bg-secondary py-2 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark" href="">FAQs</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Help</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Support</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a class="text-dark pl-2" href="">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center py-3 px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a href="{% url 'home' %}" class="text-decoration-none">
+                    <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-success font-weight-bold border px-3 mr-1">Z</span>Shoppy</h1>
+                </a>
+            </div>
+            <div class="col-lg-6 col-6 text-left">
+                <form method ="get" action="{% url 'search' %}">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="q" placeholder="Search for products">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-3 col-6 text-right">
+                <div class="dropdown profile1">
+                    <a href="#" class="btn border dropdown-toggle" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-user-circle fa-lg text-primary"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                      <!-- Dropdown menu items -->
+                      <a class="dropdown-item" href="{% url 'edit_profile' %}">Profile</a>
+                      <a class="dropdown-item" href="{% url 'customer_order' %}">Orders</a>
+                      <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                    </div>
+                </div>
+                
+                <a href="{% url 'wishlist' %}" class="btn border">
+                    <i class="fas fa-heart text-primary"></i>
+                    <!-- <span class="badge">0</span> -->
+                </a>
+                <a href="{% url 'cart' %}" class="btn border">
+                    <i class="fas fa-shopping-cart text-primary"></i>
+                    <!-- <span class="badge">0</span> -->
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-success font-weight-bold border px-3 mr-1">Z</span>Shoppy</h1>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="{% url 'home' %}" class="nav-item nav-link">Home</a>
+                            <a href="{% url 'userproduct' %}" class="nav-item nav-link">Shop</a>
+                            <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
+                            <div class="nav-item dropdown">
+                                <!-- <a href="#" class="nav-link dropdown-toggle active" data-toggle="dropdown">Pages</a> -->
+                                <div class="dropdown-menu rounded-0 m-0">
+                                    <a href="{% url 'cart' %}" class="dropdown-item">Shopping Cart</a>
+                                   
+                                </div>
+                            </div>
+                            <a href="contact.html" class="nav-item nav-link">Contact</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0">
+                            {% if request.user.is_authenticated %}
+                            
+                            <a href="{% url 'logout' %}" class="nav-item nav-link">Logout</a>
+                            
+                            {% else %}
+                            <a href="{% url 'login' %}" class="nav-item nav-link">Login</a>
+                            <a href="{% url 'signup' %}" class="nav-item nav-link">Register</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+
+    <!-- Page Header Start -->
+    
+<div class="container">
+    <div class="row">
+        {% for i in orders %}
+
+        
+        <div class="left-side">
+            {% for j in i.orderitem_set.all %}
+            <img src="{{j.image.url}}" alt="Product Image" class="product-image" style="max-width: 100px; max-height: 100px;">
+            <h2>{{j.product.product_name}}</h2>
+            <p>Price: {{j.product.price}}</p>
+            <p>Quantity: {{j.quantity}}</p>
+            <p>Order Date:{{i.date}}</p>
+            <p>Expected Delivery: DD/MM/YYYY</p>
+            
+            <hr>
+            {% endfor %}
+            <div>
+                {% if i.status == 'cancelled' %}
+                <label style="color:red">Order cancelled</label>
+                {% elif i.status != 'delivered' and i.status != 'completed' and  i.status != 'returned'%}
+                <a href="{% url 'cancel_order' i.id %}"><button type="button" class="btn btn-danger btn-lg">Cancel</button></a>
+                {% endif %}
+                
+                {% if i.status == 'delivered' or i.status == 'completed' %}
+                <a href="{% url 'return_order' i.id %}"><button type="button" class="btn btn-danger btn-lg">Return</button></a>
+                {% endif %}
+            </div>
+            
+            
+            <div>
+                <br>
+            
+                
+                
+            </div>
+           
+            
+        </div>
+        <div class="right-side">
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <p>Shipping: 10</p>
+                <p>Subtotal: {{i.amount}}</p>
+                
+                <p>Payment Method: {{i.payment_type}}</p>
+                <p style="color:blue;">Status: {{i.status}}</p>
+            </div>
+            <div class="delivery-address">
+                <h3>Delivery Address</h3>
+                <p>Name: {{i.user.username}}</p>
+                <p>Address: {{i.address.house_no}}</p>
+                <p>City: {{i.address.city}}</p>
+                <p>Phone No:{{i.address.phone_no}}</p>
+            </div>
+        </div>
+        
+        {% endfor %}
+        {% comment %} {% endfor %} {% endcomment %}
+    </div>
+</div>
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light rounded-top p-4">
+        <div class="row">
+            <div class="col-12 col-sm-6 text-center text-sm-start">
+                &copy; <a href="#">ZShoppy</a>, All Right Reserved. 
+            </div>
+            <div class="col-12 col-sm-6 text-center text-sm-end">
+                <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                Designed By <a href="https://htmlcodex.com">Akash</a>
+            </br>
+            Distributed By <a class="border-bottom" href="#" target="_blank">ZShoppy</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->
+</div>
+
+
+
+<!-- Back to Top -->
+<!-- <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a> -->
+</div>
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="lib/chart/chart.min.js"></script>
+<script src="lib/easing/easing.min.js"></script>
+<script src="lib/waypoints/waypoints.min.js"></script>
+<script src="lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="lib/tempusdominus/js/moment.min.js"></script>
+<script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+<script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- JavaScript -->
+
+
+<!-- Template Javascript -->
+<script src="{% static 'admin/js/main.js' %}"></script>
+
+<script>
+// Function to remove the success message after 2 seconds
+setTimeout(function() {
+var successMessages = document.getElementById("success-messages");
+if (successMessages) {
+    successMessages.style.display = "none";
+}
+}, 1000);
+</script>
+
+<!-- additional -->
+<!-- Add the following lines in your HTML file -->
+
+<!-- CSS -->
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
+
+<!-- JavaScript -->
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script> -->
+<!-- CSS -->
+
+
+
+</body>
+
+</html>
