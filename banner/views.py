@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect, HttpResponse
 from .models import *
 from django.views.decorators.cache import cache_control, never_cache
-from app1.models import *
 from shopper.models import *
 from django.db.models import Q
 

@@ -18,7 +18,7 @@ from app1.models import *
 def report_generator(request, orders):
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=A4, bottomup=0)
-    c.setAuthor("Plantorium")
+    c.setAuthor("ZShoppy")
     c.setTitle("Sales report")
 
     textob = c.beginText()
@@ -83,17 +83,5 @@ def report_pdf_order(request):
     
 import json
 
-def chart_demo(request):
-    orders = Order.objects.order_by('-id')[:5]
-    labels = []
-    data = []
-    for order in orders:
-        labels.append(str(order.id))
-        data.append(order.amount)
-    context = {
-        'labels': json.dumps(labels),
-        'data': json.dumps(data),
-    }
 
-    return render(request, 'chart_demo.html', context)
 

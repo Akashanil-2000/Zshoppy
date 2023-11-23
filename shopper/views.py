@@ -91,30 +91,27 @@ def cart(request):
 
 
 @never_cache
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@cache_control(no_cache=True,must_revalidate=True,no_store=True)
+
 def add_to_cart(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
-        return redirect("product_not_found")
+        return redirect('product_not_found')
 
-    quantity = request.POST.get("quantity", 1)
+    quantity = request.POST.get('quantity', 1)
 
     if not quantity:
         quantity = 1
 
     if isinstance(request.user, AnonymousUser):
-        device_id = request.COOKIES.get("device_id")
+        device_id = request.COOKIES.get('device_id')
         if not device_id:
-            return JsonResponse({"message": "Device ID not found."}, status=400)
+            return JsonResponse({'message': 'Device ID not found.'}, status=400)
 
-        cart_item, created = Cart.objects.get_or_create(
-            device=device_id, product=product
-        )
+        cart_item, created = Cart.objects.get_or_create(device=device_id, product=product)
     else:
-        cart_item, created = Cart.objects.get_or_create(
-            user=request.user, product=product
-        )
+        cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
 
     if created:
         cart_item.quantity = int(quantity)
@@ -122,53 +119,51 @@ def add_to_cart(request, product_id):
         cart_item.quantity += int(quantity)
     cart_item.save()
 
-    return redirect("cart")
+    return redirect('cart')
 
 
-@never_cache
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def remove_from_cart(request, cart_item_id):
     try:
         if isinstance(request.user, AnonymousUser):
-            device_id = request.COOKIES.get("device_id")
+            device_id = request.COOKIES.get('device_id')
             if not device_id:
-                return JsonResponse({"message": "Device ID not found."}, status=400)
+                return JsonResponse({'message': 'Device ID not found.'}, status=400)
             cart_item = Cart.objects.get(id=cart_item_id, device=device_id)
         else:
             cart_item = Cart.objects.get(id=cart_item_id, user=request.user)
         cart_item.delete()
     except Cart.DoesNotExist:
         pass
-
-    return redirect("cart")
+    
+    return redirect('cart')
 
 
 def update_cart(request, product_id):
     cart_item = None
     if isinstance(request.user, AnonymousUser):
-        device_id = request.COOKIES.get("device_id")
+        device_id = request.COOKIES.get('device_id')
         if not device_id:
-            return JsonResponse({"message": "Device ID not found."}, status=400)
+            return JsonResponse({'message': 'Device ID not found.'}, status=400)
 
-        cart_item, created = Cart.objects.get_or_create(
-            device=device_id, product_id=product_id
-        )
+        cart_item, created = Cart.objects.get_or_create(device=device_id, product_id=product_id)
     else:
         cart_item = get_object_or_404(Cart, product_id=product_id, user=request.user)
-
+    
     try:
         data = json.loads(request.body)
-        quantity = int(data.get("quantity"))
+        quantity = int(data.get('quantity'))
     except (json.JSONDecodeError, ValueError, TypeError):
-        return JsonResponse({"message": "Invalid quantity."}, status=400)
+        return JsonResponse({'message': 'Invalid quantity.'}, status=400)
 
     if quantity < 1:
-        return JsonResponse({"message": "Quantity must be at least 1."}, status=400)
-
+        return JsonResponse({'message': 'Quantity must be at least 1.'}, status=400)
+    
     cart_item.quantity = quantity
     cart_item.save()
 
-    return JsonResponse({"message": "Cart item updated."}, status=200)
+    return JsonResponse({'message': 'Cart item updated.'}, status=200)
+
+
 
 
 @never_cache
@@ -269,39 +264,42 @@ def apply_coupon(request):
 
 
 def wishlist(request):
+
     user = request.user
     if isinstance(user, AnonymousUser):
-        device_id = request.COOKIES.get("device_id")
+    
+        device_id = request.COOKIES.get('device_id')
         if not device_id:
-            return JsonResponse({"message": "Device ID not found."}, status=400)
+            return JsonResponse({'message': 'Device ID not found.'}, status=400)
         wishlist_items = Wishlist.objects.filter(device=device_id)
     else:
         wishlist_items = Wishlist.objects.filter(user=user)
 
-    context = {"wishlist_items": wishlist_items}
+    context = {
+        'wishlist_items': wishlist_items
+    }
 
-    return render(request, "wishlist.html", context)
+    return render(request, 'wishlist.html', context)
 
 
 def add_to_wishlist(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
-        return redirect("product_not_found")
+        return redirect('product_not_found')
 
     user = request.user
     if isinstance(user, AnonymousUser):
-        device_id = request.COOKIES.get("device_id")
+        device_id = request.COOKIES.get('device_id')
         if not device_id:
-            return JsonResponse({"message": "Device ID not found."}, status=400)
-        wishlist, created = Wishlist.objects.get_or_create(
-            product=product, device=device_id
-        )
+            return JsonResponse({'message': 'Device ID not found.'}, status=400)
+        wishlist, created = Wishlist.objects.get_or_create(product=product,  device=device_id)
     else:
         wishlist, created = Wishlist.objects.get_or_create(product=product, user=user)
     wishlist.save()
 
-    return redirect("wishlist")
+    return redirect('wishlist')
+
 
 
 def remove_from_wishlist(request, wishlist_item_id):
@@ -426,46 +424,47 @@ def productdetails(request, product_id=None):
 
 
 @never_cache
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@cache_control(no_cache=True,must_revalidate=True,no_store=True)
 def checkout(request):
-    if "email" in request.session:
+    if 'email' in request.session:
         user = request.user
         cart_items = Cart.objects.filter(user=user)
-        subtotal = 0
+        subtotal=0
         for cart_item in cart_items:
+            
             if cart_item.product.category.category_offer:
-                itemprice2 = (
-                    cart_item.product.price - cart_item.product.category.category_offer
-                ) * (cart_item.quantity)
-                subtotal = subtotal + itemprice2
+                itemprice2=(cart_item.product.price - cart_item.product.category.category_offer)*(cart_item.quantity)
+                subtotal=subtotal+itemprice2
             elif cart_item.product.product_offer:
-                itemprice2 = (
-                    cart_item.product.price
-                    - (cart_item.product.price * cart_item.product.product_offer / 100)
-                ) * cart_item.quantity
-                subtotal = subtotal + itemprice2
-            else:
-                itemprice2 = (cart_item.product.price) * (cart_item.quantity)
-                subtotal = subtotal + itemprice2
-        shipping_cost = 10
-        discount = request.session.get("discount", 0)
+                itemprice2 =  (cart_item.product.price - (cart_item.product.price * cart_item.product.product_offer/100)) * cart_item.quantity
+                subtotal=subtotal+itemprice2  
+            else: 
+                itemprice2=(cart_item.product.price)*(cart_item.quantity)
+                subtotal=subtotal+itemprice2
+        shipping_cost = 10 
+        discount = request.session.get('discount', 0)
         if discount:
-            total = subtotal + shipping_cost - discount if subtotal else 0
-
+            total =  subtotal + shipping_cost - discount if subtotal else 0
+        
         else:
-            total = subtotal + shipping_cost if subtotal else 0
+            total =  subtotal + shipping_cost  if subtotal else 0
+
 
         addresses = Address.objects.filter(user=user)
-
+    
         context = {
-            "cart_items": cart_items,
-            "subtotal": subtotal,
-            "total": total,
-            "addresses": addresses,
-            "discount_amount": discount,
-            "itemprice": itemprice2,
+            'cart_items'       :  cart_items,
+            'subtotal'         :  subtotal,
+            'total'            :  total,
+            'addresses'        :  addresses,
+            'discount_amount'  :  discount,
+            'itemprice'        :  itemprice2
+        
+            
         }
-        return render(request, "checkout.html", context)
+        return render(request, 'checkout.html', context)
+    else:
+        return redirect ('signup')
 
 
 def edit_profile(request):
