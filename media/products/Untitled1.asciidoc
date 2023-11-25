@@ -1,0 +1,110 @@
++*In[8]:*+
+[source, ipython3]
+----
+#1
+nums=[1,2,3,4,5,6]
+def sum1(nums):
+    for i in nums:
+        if i%2==0:  
+            sum=sum+i
+    return sum       
+    
+
+
+            
+----
+
+
++*In[13]:*+
+[source, ipython3]
+----
+#17
+strs="jupyter notebook"
+def reverse(strs):
+    strs.split()
+    return(strs[::-1])
+----
+
+
++*Out[13]:*+
+----
+koobeton retypuj
+----
+
+
++*In[23]:*+
+[source, ipython3]
+----
+#9
+nums=[2,4,6,8,10]
+nums_new=[]
+def square(nums):
+    for i in range(len(nums)):
+        
+        nums_new.append(nums[i]*nums[i])
+    return nums_new
+----
+
+
++*In[18]:*+
+[source, ipython3]
+----
+#14
+nums=[2,2,3,5,6,4,7,7]
+nums2=[]
+def uniques(nums):
+    for i in range(len(nums)-1):
+        if nums[i]!=nums[i+1]:
+            nums2.append(nums[i])
+    return nums2    
+----
+
+
++*Out[18]:*+
+----
+[2, 3, 5, 6, 4]
+----
+
+
++*In[19]:*+
+[source, ipython3]
+----
+#12
+x="c,a,d,b"
+def sorted_alph(x):
+    y=sorted(x)
+return y
+----
+
+
++*Out[19]:*+
+----
+[',', ',', ',', 'a', 'b', 'c', 'd']
+----
+
+
++*In[24]:*+
+[source, ipython3]
+----
+#5
+words="a,b,c,d,e,f,g"
+vovels="a,e,i,o,u"
+count=0
+for i in words:
+    if i in vovels:
+        count+=1
+print(count)    
+----
+
+
++*Out[24]:*+
+----
+8
+----
+
+
++*In[ ]:*+
+[source, ipython3]
+----
+
+----

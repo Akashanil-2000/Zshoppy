@@ -28,29 +28,26 @@ class Customer(AbstractUser):
 
 
 class Category(models.Model):
-    category_name = models.CharField(max_length=100)
+    category_name = models.CharField(max_length=100,unique=True)
     description = models.CharField(max_length=1000, default="")
     image = models.ImageField(upload_to="products")
     category_offer_description = models.CharField(max_length=100, null=True, blank=True)
     category_offer = models.PositiveBigIntegerField(default=0)
+    deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.category_name
 
 
 class Product(models.Model):
-    product_name = models.CharField(max_length=100)
+    product_name = models.CharField(max_length=100,unique=True)
     description = models.CharField(max_length=1000, default="")
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     stock = models.IntegerField(default=0)
     price = models.IntegerField(default=0)
     image = models.ImageField(upload_to="products")
     product_offer = models.PositiveBigIntegerField(default=0, null=True)
-    is_deleted = models.BooleanField(default=False)
-
-    def delete(self, *args, **kwargs):
-        self.is_deleted = True
-        self.save()
+    deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.product_name

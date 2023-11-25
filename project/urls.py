@@ -43,6 +43,7 @@ urlpatterns = [
     path('category/<int:id>/update_category/', views.update_category, name='update_category'),
     path('category/<int:category_id>/delete/', views.delete_category, name='delete_category'),
     path('category/<int:category_id>/edit/', views.editcategory, name='edit_category'),
+    path('restore/<int:product_id>/',views.restore_product,name='restore_product'),   #for soft deleteze
 
  
 #dashboard,customer,order,product

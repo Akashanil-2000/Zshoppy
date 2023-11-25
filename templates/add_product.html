@@ -112,6 +112,11 @@
                             <div class="modal-body">
                                 <img id="previewImage" style="display: none;">					
                                 <div class="form-group">
+                                    {% if error_message %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ error_message }}
+                                    </div>
+                                    {% endif %}
                                     <label>Product Name</label>
                                     <input name="product_name" type="text" class="form-control" required maxlength="100">
                                 </div>

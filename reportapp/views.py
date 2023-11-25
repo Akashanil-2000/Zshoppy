@@ -13,58 +13,54 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.pagesizes import A4
 from shopper.models import *
 from app1.models import *
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
 
 
 def report_generator(request, orders):
     buf = io.BytesIO()
-    c = canvas.Canvas(buf, pagesize=A4, bottomup=0)
-    c.setAuthor("ZShoppy")
-    c.setTitle("Sales report")
+    doc = SimpleDocTemplate(buf, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=18)
+    story = []
 
-    textob = c.beginText()
-    textob.setTextOrigin(inch, inch)
-    textob.setFont("Helvetica", 14)
+    data = [["Order ID", "Total Quantity", "Product IDs", "Product Names", "Amount"]]
 
-    max_orders_per_page = 4
-    max_lines_per_page = 36
-    order_count = 0
-    line_count = 0
-    lines = []
+    for order in orders:
+        # Retrieve order items associated with the current order
+        order_items = OrderItem.objects.filter(order=order)
+        total_quantity = sum(item.quantity for item in order_items)
 
-    order_count = orders.count()
-    page_count = (order_count + max_orders_per_page - 1) // max_orders_per_page
+        if order_items.exists():
+            product_ids = ", ".join([str(item.product.id) for item in order_items])
+            product_names = ", ".join([str(item.product.product_name) for item in order_items])
+        else:
+            product_ids = "N/A"
+            product_names = "N/A"
 
-    for page in range(page_count):
-        lines.clear()
+        data.append([order.id, total_quantity, product_ids, product_names, order.amount])
 
-        start_index = page * max_orders_per_page
-        end_index = start_index + max_orders_per_page
-        page_orders = orders[start_index:end_index]
+    # Create a table with the data
+    table = Table(data, colWidths=[1 * inch, 1.5 * inch, 2 * inch, 3 * inch, 1 * inch])
 
-        for order in page_orders:
-            lines.append("===========================Start===========================")
-            lines.append("Order ID:"      + str(order.id))
-            
-            lines.append("Quantity:"      + str(order.quantity))
-            lines.append("Amount:"        + str(order.amount))
-            lines.append("Address:"       + str(order.address.address1))
-            lines.append("Payment:"       + str(order.payment_type))
-            lines.append("Date:"          + str(order.date))
-            lines.append("Order Status:"  + str(order.status))
-           
+    # Style the table
+    table_style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 14),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ])
+    table.setStyle(table_style)
 
-        for line in lines:
-            line_count += 1
-            textob.textLine(line)
-            if line_count % max_lines_per_page == 0:
-                c.drawText(textob)
-                c.showPage()
-                textob = c.beginText()
-                textob.setTextOrigin(inch, inch)
-                textob.setFont("Helvetica", 14)
-    c.save()
+    # Add the table to the story and build the document
+    story.append(table)
+    doc.build(story)
+
     buf.seek(0)
-    return FileResponse(buf, as_attachment=True, filename='orders report.pdf')
+    return FileResponse(buf, as_attachment=True, filename='orders_report.pdf')
+
 
 
 
@@ -81,7 +77,7 @@ def report_pdf_order(request):
         return report_generator(request, orders)
     
     
-import json
+
 
 
 

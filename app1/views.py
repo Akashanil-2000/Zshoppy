@@ -18,6 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import json
 from django.db.models import F
 import uuid
+from django.db import IntegrityError
 import string, random
 
 
@@ -276,6 +277,8 @@ def product(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @never_cache
+
+
 def add_product(request):
     if "admin" in request.session:
         if request.method == "POST":
@@ -291,7 +294,7 @@ def add_product(request):
             images = request.FILES.getlist("mulimage")
 
             if not (
-                product_name
+                product_name.strip()  # Check if the stripped value is not empty
                 and description
                 and category_name
                 and price
@@ -299,7 +302,6 @@ def add_product(request):
                 and stock
             ):
                 error_message = "Please fill in all the required fields."
-
                 categories = Category.objects.all()
                 context = {"categories": categories, "error_message": error_message}
                 return render(request, "add_product.html", context)
@@ -312,12 +314,15 @@ def add_product(request):
             product.price = price
             product.product_offer = offer
             product.image = image
-            product.save()
 
-            # for img in images:
-            #     Images.objects.create(product=product, images=img)
-
-            return redirect("products")
+            try:
+                product.save()
+                return redirect("products")
+            except IntegrityError:
+                error_message = "A product with the same name already exists. Please choose a different name."
+                categories = Category.objects.all()
+                context = {"categories": categories, "error_message": error_message}
+                return render(request, "add_product.html", context)
 
         categories = Category.objects.all()
         context = {"categories": categories}
@@ -326,10 +331,11 @@ def add_product(request):
         return redirect("admin")
 
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @never_cache
 def userproductpage(request):
-    results = Product.objects.all().order_by("id")
+    results = Product.objects.filter(deleted=False).order_by("id")
 
     total_product_count = Product.objects.count()
     selected_categories = request.GET.getlist("category")
@@ -404,20 +410,28 @@ def add_category(request):
             offer_description = request.POST["offer_details"]
             offer_price = request.POST["offer_price"]
 
-            category = Category.objects.create(
-                category_name=category_name,
-                description=description,
-                image=image,
-                category_offer_description=offer_description,
-                category_offer=offer_price,
-            )
-            category.save()
+            # Check if the category_name is not just whitespace
+            if not category_name.strip():
+                error_message = "Category name cannot be empty or contain only spaces."
+                return render(request, "add_category.html", {"error_message": error_message})
 
-            return redirect("category")
+            try:
+                # Attempt to create a new category
+                category = Category.objects.create(
+                    category_name=category_name,
+                    description=description,
+                    image=image,
+                    category_offer_description=offer_description,
+                    category_offer=offer_price,
+                )
+                return redirect("category")
+            except IntegrityError:
+                error_message = "A category with the same name already exists. Please choose a different name."
+                return render(request, "add_category.html", {"error_message": error_message})
+
         return render(request, "add_category.html")
     else:
         return redirect("admin")
-
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @never_cache
@@ -468,12 +482,23 @@ def update(request, id):
 def delete_product(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
-    except Product.DoesNotExist:
-        return render(request, "category_not_found.html")
+        product.deleted = True
+        product.save()
 
-    product.delete()
-    print("...........................")
+    except Product.DoesNotExist:
+        return render(request, "product_not_found.html")
     return redirect("products")
+
+def restore_product(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+        product.deleted = False
+        product.save()
+    except Product.DoesNotExist:
+        return render(request, "product_not_found.html")
+    return redirect("products")
+
+
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
