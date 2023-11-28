@@ -758,16 +758,18 @@ def cancel_order(request, id):
 
 
 def wallet(request):
-    user = request.user
-    customer = Customer.objects.get(email=user)
-    wallets = Wallet.objects.filter(user=user).order_by("-created_at")
-  
-    context = {
-        "customer": customer,
-        "wallets": wallets,
-    }
-    return render(request, "wallet.html", context)
+    if "email" in request.session:
+        user = request.user
+        customer = Customer.objects.get(email=user)
+        wallets = Wallet.objects.filter(user=user).order_by("-created_at")
 
+        context = {
+            "customer": customer,
+            "wallets": wallets,
+        }
+        return render(request, "wallet.html", context)
+    else:
+        return redirect("home")
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @never_cache
